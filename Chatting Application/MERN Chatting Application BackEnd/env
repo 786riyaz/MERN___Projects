@@ -1,0 +1,4 @@
+PORT=1234
+
+DB_URL="mongodb://localhost:27017/DatabaseName"
+DB_URL="mongodb+srv://userName:passWord@atlasDatabaseName.ahpe3pk.mongodb.net/DatabaseName?retryWrites=true&w=majority&appName=AtlasDatabaseName"

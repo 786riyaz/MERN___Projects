@@ -1,0 +1,4 @@
+First of all you have to create a public forward port for backend
+then you have to add this url in .env file of frontend
+then you have to create a public forward port for frontend
+then you can use this forward port url from anywhere in the world
