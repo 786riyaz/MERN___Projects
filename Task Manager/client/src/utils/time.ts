@@ -1,3 +1,4 @@
+// client/src/utils/time.ts
 export const formatDateWithRelativeTime = (dateString: string) => {
   const date = new Date(dateString);
   const now = new Date();

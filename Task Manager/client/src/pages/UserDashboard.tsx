@@ -1,8 +1,10 @@
+// client/src/pages/UserDashboard.tsx
 import { useEffect, useState } from "react";
 import { getTasks, updateTaskStatus } from "../api/task.api";
 import { socket } from "../socket/socket";
 import { useAuth } from "../auth/AuthContext";
 import { formatDateWithRelativeTime } from "../utils/time";
+import ThemeToggle from "../components/ThemeToggle";
 
 /* ======================
    TYPES
@@ -55,12 +57,14 @@ const UserDashboard = () => {
      INITIAL LOAD + SOCKET
   ====================== */
   useEffect(() => {
+    if (!user) return;
+
     getTasks().then(res => {
       setTasks(sortByLatest(res.data));
     });
 
     socket.connect();
-    socket.emit("join", user!.id);
+    socket.emit("join", user.id);
 
     socket.on("task:assigned", (data: Notification) => {
       setNotifications(prev => [data, ...prev]);
@@ -98,12 +102,12 @@ const UserDashboard = () => {
 
   return (
     <div className="container">
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
       <div className="header">
         <h2>Welcome, {user?.username}</h2>
 
         <div style={{ display: "flex", gap: 12 }}>
-          {/* 🔔 Notification Bell */}
+          {/* 🔔 Notifications */}
           <div style={{ position: "relative" }}>
             <button onClick={() => setShowNotifications(p => !p)}>
               🔔 {notifications.length}
@@ -111,20 +115,18 @@ const UserDashboard = () => {
 
             {showNotifications && (
               <div
+                className="popup"
                 style={{
                   position: "absolute",
                   right: 0,
-                  top: 40,
+                  top: 42,
                   width: 280,
-                  background: "#fff",
-                  border: "1px solid #ccc",
-                  borderRadius: 6,
-                  padding: 10,
+                  padding: 12,
                   zIndex: 20
                 }}
               >
                 {notifications.length === 0 && (
-                  <p>No notifications</p>
+                  <p style={{ margin: 0 }}>No notifications</p>
                 )}
 
                 {notifications.map((n, i) => (
@@ -132,14 +134,16 @@ const UserDashboard = () => {
                     key={i}
                     style={{
                       marginBottom: 10,
-                      borderBottom: "1px solid #eee",
-                      paddingBottom: 6
+                      paddingBottom: 6,
+                      borderBottom: "1px solid var(--border)"
                     }}
                   >
                     <strong>{n.task.title}</strong>
-                    <div style={{ fontSize: 12 }}>
-                      Assigned at{" "}
-                      {formatDateWithRelativeTime(n.task.createdAt)}
+                    <div style={{ fontSize: 12, color: "var(--muted)" }}>
+                      Assigned{" "}
+                      {formatDateWithRelativeTime(
+                        n.task.createdAt
+                      )}
                     </div>
                   </div>
                 ))}
@@ -147,12 +151,20 @@ const UserDashboard = () => {
             )}
           </div>
 
+          {/* 🌗 Theme Switch */}
+          <ThemeToggle />
+
+          {/* 🚪 Logout */}
           <button onClick={logout}>Logout</button>
         </div>
       </div>
 
-      {/* TASK LIST */}
-      {tasks.length === 0 && <p>No tasks assigned</p>}
+      {/* ================= TASK LIST ================= */}
+      {tasks.length === 0 && (
+        <p style={{ color: "var(--muted)" }}>
+          No tasks assigned
+        </p>
+      )}
 
       {tasks.map(task => (
         <div className="task" key={task._id}>
@@ -161,16 +173,16 @@ const UserDashboard = () => {
               {task.title}
             </h4>
 
-            <p style={{ margin: "0 0 6px 0", color: "#555" }}>
+            <p style={{ margin: "0 0 6px 0", color: "var(--muted)" }}>
               {task.description}
             </p>
 
-            <small style={{ color: "#777" }}>
-              Created at:{" "}
+            <small style={{ color: "var(--muted)" }}>
+              Created at{" "}
               {formatDateWithRelativeTime(task.createdAt)}
             </small>
 
-            <div style={{ marginTop: 6 }}>
+            <div style={{ marginTop: 8 }}>
               <span className={`badge ${task.status}`}>
                 {task.status}
               </span>

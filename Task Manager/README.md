@@ -1,51 +1,58 @@
-Below is a **single, complete, copy-paste-ready `README.md`** file.
-You can paste this **as-is** into your repository root and submit it.
-
----
-
 # 🗂️ Task Management Application
 
-A minimal **Task Management System** built using the **MERN stack with TypeScript and Socket.io**, featuring **JWT authentication**, **role-based access control (RBAC)**, and **real-time notifications**.
+A minimal yet **production-grade Task Management System** built using the **MERN stack with TypeScript and Socket.io**, featuring **JWT authentication**, **role-based access control (RBAC)**, **real-time notifications**, and **theme switching**.
 
-This project was developed as part of a **practical interview assignment**, focusing on clean architecture, correctness, and real-world patterns rather than UI frameworks.
+This project was developed as part of a **practical interview assignment**, with a strong focus on **clean architecture, correctness, real-time behavior, and real-world patterns**, rather than heavy UI frameworks.
 
 ---
 
 ## 🚀 Tech Stack
 
 ### Backend
+
 - Node.js
 - Express.js
 - TypeScript
 - MongoDB (Mongoose)
 - JWT Authentication
-- Socket.io
+- Socket.io (real-time communication)
 
 ### Frontend
+
 - React
 - TypeScript
 - Axios
 - React Router
 - Socket.io Client
+- Context API
 - Plain CSS (no UI libraries)
+- Light / Dark Theme Switching
 
 ---
 
 ## 👥 Roles & Permissions
 
-### Admin
+### 👨‍💼 Admin
+
 - Login
 - Create tasks (title + description)
 - Assign tasks to users
 - View all tasks
 - View task creation time (absolute + relative)
+- 🔔 Receive **real-time notifications** when:
+  - A task is assigned (existing)
+  - A user updates the status of any assigned task (new)
 
-### User
+- Toggle Light / Dark theme (persisted across refresh)
+
+### 👤 User
+
 - Login
 - View only assigned tasks
 - Update task status (`todo | in-progress | done`)
-- Receive real-time notifications when a task is assigned
+- 🔔 Receive real-time notifications when a task is assigned
 - View task details with timestamps
+- Toggle Light / Dark theme (persisted across refresh)
 
 ---
 
@@ -53,20 +60,25 @@ This project was developed as part of a **practical interview assignment**, focu
 
 - JWT-based authentication
 - Role-based access control (RBAC)
-- Task creation with description
+- Task creation and assignment
 - Task status updates
-- Real-time task assignment notifications (Socket.io)
-- Notification bell UI
+- 🔔 **Real-time notifications using Socket.io**
+  - User notified when task is assigned
+  - Admin notified when user updates task status
+
+- Notification bell UI for both Admin and User
 - Absolute + relative timestamps (auto-updated every minute)
-- Clean and readable UI
-- Empty-state handling (no tasks)
+- 🌗 Light / Dark theme switching
+- Theme persistence using `localStorage`
+- Smooth theme transitions
+- Clean, readable, framework-free UI
+- Empty-state handling (no tasks / no notifications)
 
 ---
 
 ## 📁 Project Structure
 
 ```
-
 root/
 ├── backend/
 │   ├── controllers/
@@ -83,14 +95,14 @@ root/
 │   │   ├── components/
 │   │   ├── pages/
 │   │   ├── socket/
+│   │   ├── theme/
 │   │   ├── utils/
 │   │   └── App.tsx
 │   └── index.css
 │
 ├── .gitignore
 └── README.md
-
-````
+```
 
 ---
 
@@ -101,7 +113,7 @@ root/
 ```bash
 git clone https://github.com/786riyaz/Task-Management.git
 cd Task-Management
-````
+```
 
 ---
 
@@ -112,7 +124,7 @@ cd server
 npm install
 ```
 
-Create a `.env` file in the `backend` folder:
+Create a `.env` file in the `server` folder:
 
 ```env
 PORT=5000
@@ -154,18 +166,18 @@ http://localhost:5173
 
 ### Authentication
 
-* `POST /api/auth/register`
-* `POST /api/auth/login`
+- `POST /api/auth/register`
+- `POST /api/auth/login`
 
 ### Tasks
 
-* `POST /api/task/tasks` – Admin only
-* `GET /api/task/tasks`
-* `PATCH /api/task/tasks/:id/status` – Assigned user only
+- `POST /api/task/tasks` – Admin only
+- `GET /api/task/tasks`
+- `PATCH /api/task/tasks/:id/status` – Assigned user only
 
 ### Users
 
-* `GET /api/users` – Admin only
+- `GET /api/users` – Admin only
 
 ---
 
@@ -173,59 +185,150 @@ http://localhost:5173
 
 ### Server Emits
 
-* `task:assigned` – When an admin assigns a task to a user
+- `task:assigned`
+  - When an admin assigns a task to a user
 
-### Client Listens
+- `task:status-updated`
+  - When a user updates the status of an assigned task (notifies admin)
 
-* Notification bell updates instantly
-* Task list updates without page refresh
+### Client Behavior
+
+- Notification bell updates instantly
+- Task list updates live without page refresh
+- Admin and User notifications are **room-based**, scoped by `userId`
 
 ---
 
 ## 🕒 Time Handling
 
-* Tasks display **absolute time** and **relative time**
-* Example:
+- Tasks display both **absolute time** and **relative time**
+- Example:
 
-  ```
-  Created at: 27/01/2026, 03:58:16 PM (1 hour ago)
-  ```
-* Relative time auto-updates every minute using a single interval-based re-render
+```
+Created at: 27/01/2026, 03:58:16 PM (1 hour ago)
+```
+
+- Relative time auto-updates every minute using a single interval-based re-render
+- Centralized time utility for consistency
+
+---
+
+## 🌗 Theme Switching
+
+- Light and Dark theme support
+- Global theme managed using Context API
+- Theme preference persisted using `localStorage`
+- Theme remains unchanged after:
+  - Page refresh
+  - Logout / Login
+
+- Smooth 500ms CSS-based transitions
+- Theme toggle available on:
+  - Login page
+  - Admin dashboard
+  - User dashboard
 
 ---
 
 ## 🧠 Design Decisions
 
-* Stateless JWT authentication for scalability
-* RBAC enforced at middleware and query level
-* Socket rooms keyed by `userId` for targeted notifications
-* Centralized time formatting utility
-* Single interval approach for relative time updates
-* Minimal UI to keep focus on logic and correctness
+- Stateless JWT authentication for scalability
+- RBAC enforced at middleware and query level
+- Socket.io rooms keyed by `userId` for targeted notifications
+- Admin notification logic reuses existing socket infrastructure
+- Centralized time formatting utility
+- Single interval approach for relative time updates
+- Theme applied via CSS variables for performance
+- Minimal UI to keep focus on logic and correctness
 
 ---
 
 ## 🧪 Testing
 
-* APIs tested using Postman
-* RBAC verified using Admin & User roles
-* Socket.io events verified via UI and browser console
+- APIs tested using Postman
+- RBAC verified using Admin & User roles
+- Socket.io events verified via UI behavior and browser console
+- Theme persistence tested across refresh and logout/login cycles
 
 ---
 
 ## 👤 Author
 
-**Your Name**
-GitHub: `786riyaz`
+GitHub: **786riyaz**
 
 ---
 
 ## ✅ Submission Status
 
-This project satisfies all requirements of the practical interview assignment and is ready for evaluation.
+This project satisfies **all requirements** of the practical interview assignment, including:
+
+- Authentication & RBAC
+- Real-time task assignment notifications
+- Real-time admin notifications on task status updates
+- Clean UI with theme switching
+- Correct data handling and architecture
+
+The project is **ready for evaluation**.
 
 ---
 
-## ✅ Future Improvement
+## 🚀 Future Improvements
 
-Adding a new feature for admin dashboard where the admin can also receive the notification on the modification of any task status.
+- Mark notifications as read/unread
+- Admin dashboard analytics
+
+---
+
+## 📸 Application Screenshots
+
+> The following screenshots demonstrate the core functionality, role-based behavior, real-time notifications, and overall workflow of the application.
+
+---
+
+### 🔐 01. Login Page
+
+![Login Page](UT/01%20Login.png)
+
+---
+
+### 👨‍💼 02. Dashboard
+
+![Admin Dashboard](UT/02%20Dashboard.png)
+
+---
+
+### 📝 03. Admin Assigning Task to User 1
+
+![Assigning Task to User 1](UT/03%20Assigning%20Task%20to%20User%201.png)
+
+---
+
+### 🔔 04. User 1 Receiving Task Assignment Notification
+
+![User 1 Getting Notification](UT/04%20User1%20Getting%20Notification.png)
+
+---
+
+### 🔄 05. User 1 Updating Task Status
+
+![User 1 Updating Task Status](UT/05%20User1%20Updating%20Task%20Status.png)
+
+---
+
+### 🔔 06. Admin Receiving Notification for Updated Task (User 1)
+
+![Admin Getting Notification for Updated Task of User 1](UT/06%20Admin%20Getting%20Notification%20for%20Updated%20Task%20of%20User%201.png)
+
+---
+
+### 📝 07. Admin Assigning Task to User 2
+
+![Assigning Task to User 2](UT/07%20Assigning%20Task%20to%20User%202.png)
+
+---
+
+### 🔔 08. Admin Receiving Notification for Updated Task (User 2)
+
+![Admin Getting Notification for Updated Task of User 2](UT/08%20Admin%20Getting%20Notification%20for%20Updated%20Task%20of%20User%202.png)
+
+---

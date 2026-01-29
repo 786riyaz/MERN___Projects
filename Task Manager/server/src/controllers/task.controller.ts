@@ -1,3 +1,4 @@
+// server/src/controllers/task.controller.ts
 import { Response } from "express";
 import Task from "../models/Task.ts";
 import { AuthRequest } from "../middleware/auth.middleware.ts";
@@ -5,13 +6,8 @@ import { io } from "../server.ts";
 
 export const createTask = async (req: AuthRequest, res: Response) => {
   try {
+    console.log("Inside Create Task Controller.")
     const { title, description, assignedTo } = req.body;
-
-    if (!title || !description || !assignedTo) {
-      return res
-        .status(400)
-        .json({ message: "Title, description and assignedTo required" });
-    }
 
     const task = await Task.create({
       title,
@@ -20,19 +16,21 @@ export const createTask = async (req: AuthRequest, res: Response) => {
       createdBy: req.user!.id
     });
 
+    // 🔔 Notify assigned user
     io.to(assignedTo).emit("task:assigned", {
       message: "New task assigned",
       task
     });
 
-    return res.status(201).json(task);
+    res.status(201).json(task);
   } catch {
-    return res.status(500).json({ message: "Failed to create task" });
+    res.status(500).json({ message: "Failed to create task" });
   }
 };
 
 export const getTasks = async (req: AuthRequest, res: Response) => {
   try {
+    console.log("Inside Get Tasks Controller.")
     const filter =
       req.user!.role === "admin"
         ? {}
@@ -51,6 +49,7 @@ export const getTasks = async (req: AuthRequest, res: Response) => {
 
 export const updateTaskStatus = async (req: AuthRequest, res: Response) => {
   try {
+    console.log("Inside Update Task Status Controller.")
     const { status } = req.body;
     const taskId = req.params.id;
 
@@ -58,15 +57,29 @@ export const updateTaskStatus = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "Invalid status" });
     }
 
-    const task = await Task.findById(taskId);
-    if (!task) return res.status(404).json({ message: "Task not found" });
+    const task = await Task.findById(taskId)
+      .populate("assignedTo", "username")
+      .populate("createdBy", "username");
 
-    if (task.assignedTo.toString() !== req.user!.id) {
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    if (task.assignedTo._id.toString() !== req.user!.id) {
       return res.status(403).json({ message: "Not allowed" });
     }
 
     task.status = status;
     await task.save();
+
+    // 🔔 Notify ADMIN (task creator)
+    io.to(task.createdBy._id.toString()).emit(
+      "task:status-updated",
+      {
+        message: `Task "${task.title}" marked as ${status}`,
+        task
+      }
+    );
 
     res.json(task);
   } catch {

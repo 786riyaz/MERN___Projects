@@ -1,4 +1,4 @@
-// controllers/auth.controller.ts
+// server/controllers/auth.controller.ts
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -10,6 +10,7 @@ import User from "../models/User.ts";
  */
 export const register = async (req: Request, res: Response) => {
   try {
+    console.log("Inside Register Controller.")
     const { username, password, role } = req.body;
 
     if (!username || !password) {
@@ -48,6 +49,7 @@ export const register = async (req: Request, res: Response) => {
  */
 export const login = async (req: Request, res: Response) => {
   try {
+    console.log("Inside Login Controller.")
     const { username, password } = req.body;
 
     if (!username || !password) {

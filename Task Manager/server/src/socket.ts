@@ -1,3 +1,4 @@
+// server/socket.ts
 import { Server } from "socket.io";
 
 let io: Server;

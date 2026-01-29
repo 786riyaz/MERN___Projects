@@ -1,5 +1,5 @@
+// client/src/auth/AuthContext.tsx
 import { createContext, useContext, useState } from "react";
-
 interface User {
   id: string;
   username: string;
@@ -16,7 +16,7 @@ const AuthContext = createContext<AuthContextType>(null!);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(
-    JSON.parse(localStorage.getItem("user") || "null")
+    JSON.parse(localStorage.getItem("user") || "null"),
   );
 
   const login = (data: any) => {
@@ -26,8 +26,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = () => {
-    localStorage.clear();
+    // localStorage.clear();
     setUser(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
 
   return (

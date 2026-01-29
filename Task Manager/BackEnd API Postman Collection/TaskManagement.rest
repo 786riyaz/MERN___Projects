@@ -1,0 +1,118 @@
+@baseURL = http://localhost:5000
+@json = application/json
+
+###
+# =========================
+# AUTHENTICATION
+# =========================
+
+### Register User (user3)
+POST {{baseURL}}/api/auth/register
+Content-Type: {{json}}
+
+{
+  "username": "user3",
+  "password": "user123"
+}
+
+###
+
+### Login Admin
+POST {{baseURL}}/api/auth/login
+Content-Type: {{json}}
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+# After running this, copy token from response
+# and paste into @adminToken below
+
+###
+# @adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.REPLACE_WITH_ADMIN_TOKEN
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Nzg3Yjc1ZGNkZDEzOGFiMjE5Mzc3NCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2OTU4ODc3MiwiZXhwIjoxNzY5NTkyMzcyfQ.YBWK-9rqnBYBIwBMZjIFQF8ptUsVF7n7z8AKk_nN5eo
+
+###
+
+### Login User 1
+POST {{baseURL}}/api/auth/login
+Content-Type: {{json}}
+
+{
+  "username": "user1",
+  "password": "user123"
+}
+
+###
+@user1Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.REPLACE_WITH_USER1_TOKEN
+
+###
+
+### Login User 2
+POST {{baseURL}}/api/auth/login
+Content-Type: {{json}}
+
+{
+  "username": "user2",
+  "password": "user123"
+}
+
+###
+@user2Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.REPLACE_WITH_USER2_TOKEN
+
+###
+
+### Login User 3
+POST {{baseURL}}/api/auth/login
+Content-Type: {{json}}
+
+{
+  "username": "user3",
+  "password": "user123"
+}
+
+###
+@user3Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.REPLACE_WITH_USER3_TOKEN
+
+###
+# =========================
+# TASKS
+# =========================
+
+### Get All Tasks (Admin)
+GET {{baseURL}}/api/task/tasks
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Create Task (Admin)
+POST {{baseURL}}/api/task/tasks
+Authorization: Bearer {{adminToken}}
+Content-Type: {{json}}
+
+{
+  "title": "Test Title",
+  "description": "Task Description",
+  "assignedTo": "69787ba1dcdd138ab2193777"
+}
+
+###
+
+### Update Task Status (User)
+PATCH {{baseURL}}/api/task/tasks/6978839e7f02dba2ea54b47f/status
+Authorization: Bearer {{user1Token}}
+Content-Type: {{json}}
+
+{
+  "status": "in-progress"
+}
+
+###
+# =========================
+# USERS
+# =========================
+
+### Get All Users (Admin Only)
+GET {{baseURL}}/api/users
+Authorization: Bearer {{adminToken}}
