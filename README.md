@@ -1,2 +1,2 @@
 # MERN_Projects
-To Save Different MERN Stack Proects 
+To Save Different MERN Stack Projects 
